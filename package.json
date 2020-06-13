@@ -1,0 +1,20 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "cbuild": "tsc --watch",
+    "start": "http-server . -p 45772 -o \"/public/?local&dev&debug\" -c-1",
+    "electron": "electron electron-main.js"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "canary",
+    "@typescript-eslint/parser": "canary",
+    "eslint": "latest",
+    "http-server": "^0.12.3",
+    "typescript": "next"
+  },
+  "dependencies": {
+    "rxjs": "next",
+    "systemjs": "^6.3.2"
+  }
+}
