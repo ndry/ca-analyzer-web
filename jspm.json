@@ -1,0 +1,28 @@
+{
+  "resolve": {
+    "@jspm/core": "npm:@jspm/core@1.1.1",
+    "es-module-shims": "npm:es-module-shims@0.4.6",
+    "park-miller": "npm:park-miller@1.1.0",
+    "rxjs": "npm:rxjs@7.0.0-beta.0"
+  },
+  "dependencies": {
+    "npm:@jspm/core@1.1.1": {
+      "source": "https://registry.npmjs.org/@jspm/core/-/core-1.1.1.tgz#sha512-5JjuDSzcxuxgzJ/+ynA7bcqZkI9CdDBERXOnDGdhphxNfmd4PkNl0RDE4hUH0+n8yEaz08Tdmjgxe7tlX3LmRA=="
+    },
+    "npm:es-module-shims@0.4.6": {
+      "source": "https://registry.npmjs.org/es-module-shims/-/es-module-shims-0.4.6.tgz#sha512-EzVhnLyA/zvmGrAy2RU8m9xpxX7u2yb2by1GZH80SHF6lakG21YAm3Vo56KsLIXaIjT9QabqjYpQU1S5FkM8+Q=="
+    },
+    "npm:park-miller@1.1.0": {
+      "source": "https://registry.npmjs.org/park-miller/-/park-miller-1.1.0.tgz#sha512-6mLXc2jkM9dcavPoxDHfof2QM/baCsrgK51iHbJDHl94AwymJv2Z/iGKQVwJMWUAXFiIV6FzY9UskjU3+KvLuA=="
+    },
+    "npm:rxjs@7.0.0-beta.0": {
+      "source": "https://registry.npmjs.org/rxjs/-/rxjs-7.0.0-beta.0.tgz#sha512-MMsqDczs2RzsTvBiH6SKjJkdAh7WaI6Q0axP/DX+1ljwFm6+18AhQ3kVT8gD7G0dHIVfh5hDFoqLaW79pkiGag==",
+      "resolve": {
+        "tslib": "npm:tslib@1.13.0"
+      }
+    },
+    "npm:tslib@1.13.0": {
+      "source": "https://registry.npmjs.org/tslib/-/tslib-1.13.0.tgz#sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q=="
+    }
+  }
+}

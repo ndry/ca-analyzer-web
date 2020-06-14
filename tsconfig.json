@@ -1,20 +1,25 @@
 {
     "compilerOptions": {
-        "outFile": "./public/app.js",
-        "module": "system",
+        "outDir": "./public/app/",
+        "module": "ESNext",
         "moduleResolution": "node",
         "target": "esnext",
 
         "sourceMap": true,
 
         "strict": true,
-        "noImplicitReturns": true,
-        "noUnusedLocals": false,
-        "noUnusedParameters": false
+        
+        "allowSyntheticDefaultImports": true,
+        
+        "baseUrl": ".",
+        "paths": {
+            "park-miller": ["./jspm_packages/npm/park-miller@1.1.0"],
+            "rxjs": ["./jspm_packages/npm/rxjs@7.0.0-beta.0"],
+            "rxjs/*": ["./jspm_packages/npm/rxjs@7.0.0-beta.0/*"]
+        }
     },
     "include": [
-        "src/@types/env.d.ts",
-        "src/@types/rxjs.umd.d.ts",
-        "./src/main.ts"
+        "./src/@types/**/*.d.ts",
+        "./src/index.ts"
     ]
 }
