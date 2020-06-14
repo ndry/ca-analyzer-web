@@ -1,6 +1,6 @@
 const imports = {
-    "rxjs": "dist/bundles/rxjs.umd.js",
-    "park-miller": "index.js",
+    "rxjs": "./dist/bundles/rxjs.umd.js",
+    "park-miller": "./index.js",
 };
 
 (async () => {
@@ -41,17 +41,15 @@ const imports = {
         appendScript({ src: "https://www.googletagmanager.com/gtag/js?id=UA-116161563-1" });
     }
 
-    appendScript({
-        src: getUnpkgRoot("es-module-shims") + "/dist/es-module-shims.min.js",
-        defer: true,
-        async: false,
-    })
-
     for (const module of Object.keys(imports)) {
         imports[module] = getJspmRoot(module) + imports[module];
     }
     appendScript({
         type: "importmap-shim",
         textContent: JSON.stringify({ imports }),
+    });
+
+    appendScript({
+        src: getUnpkgRoot("es-module-shims") + "./dist/es-module-shims.min.js"
     });
 })();

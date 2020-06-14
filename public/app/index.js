@@ -9,6 +9,7 @@ s.next(hello);
 s.next(hello);
 s.next(hello);
 const app = new Application();
+app.run();
 const pm = new ParkMiller(10);
 console.log(hello);
 console.log(pm.integer());

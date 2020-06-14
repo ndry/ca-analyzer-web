@@ -4,11 +4,11 @@ export class Spacetime {
     data: Array<Array<number>>;
 
     constructor(
-        public spaceSize = 770,
-        public timeSize = 1920
+        public spaceSize: number,
+        public timeSize: number,
     ) {
         this.data = Array.from({ length: timeSize }, () => 
-            Array.from({ length: spaceSize }));
+            Array.from({ length: spaceSize }, () => 0));
     }
 
     performStep() {
