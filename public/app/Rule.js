@@ -1,10 +1,25 @@
+import { getDigitsFromNumber, getNumberFromDigits } from "./utils/misc.js";
 export class Rule {
-    constructor(stateCount, table) {
+    constructor(stateCount, tableOrCode) {
         this.stateCount = stateCount;
-        this.table = table;
+        this.tableOrCode = tableOrCode;
         this.spaceNeighbourhoodRadius = 1;
         this.timeNeighbourhoodRadius = 2;
-        console.log(table);
+        if (Array.isArray(tableOrCode)) {
+            this.table = tableOrCode;
+            this.code = getNumberFromDigits(this.table, stateCount);
+        }
+        else {
+            this.code = tableOrCode;
+            this.table = getDigitsFromNumber(this.code, this.stateCount, Array.from({ length: Math.pow(this.stateCount, 4) }));
+        }
+        this.tableDesc = this.table.join("");
+    }
+    static getRuleSpaceSizePower(stateCount) {
+        return stateCount ** 4;
+    }
+    static getRuleSpaceSize(stateCount) {
+        return stateCount ** (stateCount ** 4);
     }
     fillSpace(spacetime, t) {
         const nr = this.spaceNeighbourhoodRadius;
@@ -30,6 +45,7 @@ export class Rule {
             space[x] = table[state];
             console.assert(table[state] !== undefined);
         }
+        return space;
     }
 }
 //# sourceMappingURL=Rule.js.map

@@ -3,7 +3,8 @@
     "@jspm/core": "npm:@jspm/core@1.1.1",
     "es-module-shims": "npm:es-module-shims@0.4.6",
     "park-miller": "npm:park-miller@1.1.0",
-    "rxjs": "npm:rxjs@7.0.0-beta.0"
+    "rxjs": "npm:rxjs@7.0.0-beta.0",
+    "tweakpane": "npm:tweakpane@1.5.3"
   },
   "dependencies": {
     "npm:@jspm/core@1.1.1": {
@@ -23,6 +24,9 @@
     },
     "npm:tslib@1.13.0": {
       "source": "https://registry.npmjs.org/tslib/-/tslib-1.13.0.tgz#sha512-i/6DQjL8Xf3be4K/E6Wgpekn5Qasl1usyw++dAA35Ue5orEn65VIxOA+YvNNl9HV3qv70T7CNwjODHZrLwvd1Q=="
+    },
+    "npm:tweakpane@1.5.3": {
+      "source": "https://registry.npmjs.org/tweakpane/-/tweakpane-1.5.3.tgz#sha512-GYaKd+6Tm/f/lWYSvdN2hJ3GANHer81i/A9CPjoRX2kF42yIrQIgkhzRi8UJzAbpi/mH32LkiGNHWBhQOKz5ZA=="
     }
   }
 }

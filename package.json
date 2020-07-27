@@ -15,11 +15,11 @@
     "jspm": "latest",
     "typescript": "next"
   },
-  "dependencies": {},
   "jspm": {
     "dependencies": {
       "park-miller": "^1.1.0",
-      "rxjs": "^7.0.0-beta.0"
+      "rxjs": "^7.0.0-beta.0",
+      "tweakpane": "1.5.3"
     },
     "devDependencies": {
       "@jspm/core": "^1.1.1",

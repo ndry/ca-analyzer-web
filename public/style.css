@@ -11,10 +11,3 @@ html, body {
 }
 #canvas {
 }
-#gui {
-    position: absolute;
-    left: 0;
-    top: 0;
-    color: white;
-    font-size: larger;
-}

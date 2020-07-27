@@ -1,6 +1,7 @@
 const imports = {
     "rxjs": "./dist/bundles/rxjs.umd.js",
     "park-miller": "./index.js",
+    "tweakpane": "./dist/tweakpane.js"
 };
 
 (async () => {

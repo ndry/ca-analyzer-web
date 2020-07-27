@@ -17,12 +17,14 @@ export function setTimeoutAsync(ms: number) {
 }
 
 export function getDigitsFromNumber(
-    n: number, 
+    n: bigint, 
     base: number,
     digits: number[],
 ) {
+    const basen = BigInt(base);
     for (let x = digits.length - 1; x >= 0; x--) {
-        n = (n - (digits[x] = n % base)) / base;
+        digits[x] = Number(n % basen);
+        n = n / basen;
     }
 
     return digits;
@@ -32,11 +34,12 @@ export function getNumberFromDigits(
     digits: number[],
     base: number
 ) {
-    let n = 0;
+    const basen = BigInt(base);
+    let n = 0n;
 
     for (let x = 0; x < digits.length; x++) {
-        n *= base;
-        n += digits[x];
+        n *= basen;
+        n += BigInt(digits[x]);
     }
 
     return n;

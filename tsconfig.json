@@ -15,7 +15,8 @@
         "paths": {
             "park-miller": ["./jspm_packages/npm/park-miller@1.1.0"],
             "rxjs": ["./jspm_packages/npm/rxjs@7.0.0-beta.0"],
-            "rxjs/*": ["./jspm_packages/npm/rxjs@7.0.0-beta.0/*"]
+            "rxjs/*": ["./jspm_packages/npm/rxjs@7.0.0-beta.0/*"],
+            "tweakpane": ["./jspm_packages/npm/tweakpane@1.5.3/dist/types"],
         }
     },
     "include": [
