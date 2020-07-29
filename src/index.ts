@@ -1,9 +1,262 @@
-import {Application} from "./Application.js";
+// import {Application} from "./Application.js";
 
-const app = new Application();
-if (env.debug) {
-    Object.assign(window, {
-        app
-    });
+// const app = new Application();
+// if (env.debug) {
+//     Object.assign(window, {
+//         app
+//     });
+// }
+// app.run();
+
+import "./utils/dragPage.js";
+import { generate } from "./generate.js";
+import { render } from "./render.js";
+import { FullRuleSpace } from "./rule/FullRuleSpace.js";
+import { SymmetricalRuleSpace, ReversibleSymmetricalRuleSpace, getRevSymRuleSpaceSize, symToFull, createRevSymTable, revSymToSym, createZcRevSymTable, getZcRevSymRuleSpaceSize, createRandomZcRevSymTable, createRandomSymTable, getSymRuleSpaceSize } from "./rule/SymmetricalRuleSpace.js";
+import { CacheMap } from "./utils/CacheMap.js";
+import { Rule } from "./rule/Rule.js";
+import { getNumberFromDigits } from "./utils/misc.js";
+
+
+const canvas = document.getElementById("canvas") as HTMLCanvasElement;
+const ctx = canvas.getContext("2d")!;
+ctx.imageSmoothingEnabled = false;
+
+const colors = [
+    0xFF000000,
+    0xFF00FF00,
+    0xFFFF0000,
+    0xFF0000FF,
+    0xFFFF00FF,
+];
+
+function getSpacePairHash(spacePair: number[][], margin: number) {
+    let hash = 0;
+    for (let x = margin; x < spacePair[0].length - margin; x++) {
+        hash += spacePair[0][x] + spacePair[1][x];
+    }
+    return hash;
 }
-app.run();
+function getSpacePairEquals(
+    spacePair1: number[][], 
+    spacePair2: number[][], 
+    margin: number
+) {
+    for (let x = margin; x < spacePair1[0].length - margin; x++) {
+        if (spacePair2[0][x] !== spacePair1[0][x] 
+            || spacePair2[1][x] !== spacePair1[1][x]) {
+            return false;
+        }
+    }
+    return true;
+}
+
+export class SpacePairHashSet extends CacheMap<number, Set<number[][]>> {
+    constructor(
+    ) {
+        super(() => new Set<number[][]>());
+    }
+
+    public add(spacePair: number[][], margin: number) {
+        this.contains(spacePair, margin, true);
+    }
+
+    public contains(spacePair: number[][], margin: number, add = false) {
+        const hash = getSpacePairHash(spacePair, margin);
+        const set = this.get(hash);
+
+        const contains = [...set]
+            .some(sp => getSpacePairEquals(sp, spacePair, margin));
+
+        if (add) {
+            set.add(spacePair);
+        }
+    
+        return contains;
+    }
+}
+
+
+export function hasBlackFloorAtTime(
+    spacetime: number[][],
+    t: number,
+) {
+    const prevSpace = spacetime[t - 1];
+    const space = spacetime[t];
+    const spaceSize = space.length;
+    if (!space) {
+        return false;
+    }
+    let acc = 0;
+    let maxAcc = -1;
+    for (let x = 0; x < spaceSize; x++) {
+        if (space[x] === 0 && prevSpace[x] === 0) {
+            acc++;
+        } else {
+            if (acc > maxAcc) {
+                maxAcc = acc;
+                if (maxAcc > 0.2 * spaceSize) {
+                    return true;
+                }
+            }
+            acc = 0;
+        }
+    }
+    if (acc > maxAcc) {
+        maxAcc = acc;
+        if (maxAcc > 0.2 * spaceSize) {
+            return true;
+        }
+    }
+    return maxAcc > 0.2 * spaceSize;
+}
+
+function getBorderFriendness(fullTable: number[], stateCount: number) {
+    let acc = 0;
+    let acc2 = 0;
+    let acc3 = 0;
+    let acc4 = 0;
+    let acc5 = 0;
+    let acc6 = 0;
+
+    const n1 = 0;
+    for (let n2 = 1; n2 < stateCount; n2++) {
+        for (let pc = 0; pc < stateCount; pc++) {
+            for (let c = 0; c < stateCount; c++) {
+                let combinedState = 0;
+                combinedState = combinedState * stateCount + n1;
+                combinedState = combinedState * stateCount + c;
+                combinedState = combinedState * stateCount + n2;
+                combinedState = combinedState * stateCount + pc;
+
+                const s = fullTable[combinedState];
+
+                if (c === 0 && pc === 0) {
+                    if (s === 0) {
+                        acc++;
+                    }
+                    acc2++;
+                }
+
+                if (pc === 0) {
+                    if (s === 0) {
+                        acc3++;
+                    }
+                    acc4++;
+                }
+
+                if (c === 0) {
+                    if (s === 0) {
+                        acc5++;
+                    }
+                    acc6++;
+                }
+            }
+        }
+    }
+    console.log(acc, acc2, acc3, acc4, acc5, acc6);
+    return acc;
+}
+
+// let code = 0n;
+let triedCode = 0;
+let tried = 0;
+let found = 0;
+function doit() {
+    let takeThis = false;
+    let localTriedCode = 0;
+    let localTried = 0;
+    do {
+        const stateCount = 3;
+        // const ruleSpaceSize = getZcRevSymRuleSpaceSize(stateCount);
+        // const revSymTable = createRandomZcRevSymTable(stateCount);
+        // const symTable = revSymToSym(revSymTable, stateCount);
+        const ruleSpaceSize = getSymRuleSpaceSize(stateCount)
+        const symTable = createRandomSymTable(stateCount);
+        const fullTable = symToFull(symTable, stateCount);
+        const rule = new Rule(stateCount, fullTable);
+        console.log(
+            "rule space code", 
+            "n/a", 
+            "of",
+            ruleSpaceSize);
+        console.log(getNumberFromDigits(fullTable, stateCount), fullTable.join(""));
+        // console.log("revSymTable", revSymTable.join("")); 
+        triedCode++;
+            localTriedCode++;
+        const bf = getBorderFriendness(fullTable, stateCount);
+        if (bf < 1 || symTable[0] !== 0) {
+            if (localTriedCode > 1000) {
+                return;
+            } else {
+                continue;
+            }
+        }
+        // console.log("getBorderFriendness", getBorderFriendness(fullTable, stateCount));
+        const margin = rule.spaceNeighbourhoodRadius;
+
+        const hashMap = new SpacePairHashSet();
+
+        let cycledAt = -1;
+        let hasFloor = false;
+        let abortCountdown = -1;
+        
+        const spacetime = generate({
+            timeSize: 8000,
+            spaceSize: 800,
+            rule,
+            startFill: "zeros",
+            bordersFill: "random",
+            randomSeed: 4242,
+            analyze(spacetime: number[][], t: number) {
+                if (abortCountdown == 0) {
+                    return true;
+                } else if (abortCountdown > 0) {
+                    abortCountdown--;
+                    return false;
+                } 
+
+                const space = spacetime[t];
+                if (hasFloor) {
+                    const spacePair = [spacetime[t - 1], spacetime[t]];
+                    if (t > space.length / 2) {
+                        if (hashMap.contains(spacePair, margin, true)) {
+                            cycledAt = t;
+                            console.log("cycledAt", cycledAt);
+                            abortCountdown = 100;
+                        }
+                    }
+                }
+                if (t === space.length * 4 || t === space.length * 8) {
+                    if (hasBlackFloorAtTime(spacetime, t)) {
+                        hasFloor = true;
+                        console.log("hasFloor");
+                    }
+                }
+
+                return false;
+            }
+        });
+        // code++;
+        tried++;
+        localTried++;
+        if (cycledAt < 0) {
+            takeThis = true;
+            render(spacetime, ctx, colors);
+        }
+        if (localTried > 150) {
+            return;
+        }
+    } while (!takeThis);
+    found++;
+    console.log(triedCode, tried, found, found / triedCode, found / tried);
+}
+
+window.addEventListener("keypress", ev => {
+    switch (ev.code) {
+        case "KeyR":
+            doit();
+            break;
+    }
+});
+// doit();

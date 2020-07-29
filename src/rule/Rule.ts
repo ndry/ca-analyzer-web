@@ -1,5 +1,5 @@
-import { Spacetime } from "./Spacetime.js";
-import { getDigitsFromNumber, getNumberFromDigits } from "./utils/misc.js";
+import { Spacetime } from "../Spacetime.js";
+import { getDigitsFromNumber, getNumberFromDigits } from "../utils/misc.js";
 
 export class Rule {
     public static getRuleSpaceSizePower(stateCount: number) {
@@ -9,8 +9,11 @@ export class Rule {
         return stateCount ** (stateCount ** 4);
     }
 
-    public readonly spaceNeighbourhoodRadius = 1;
-    public readonly timeNeighbourhoodRadius = 2;
+    public static readonly spaceNeighbourhoodRadius = 1;
+    public static readonly timeNeighbourhoodRadius = 2;
+
+    public readonly spaceNeighbourhoodRadius = Rule.spaceNeighbourhoodRadius;
+    public readonly timeNeighbourhoodRadius = Rule.timeNeighbourhoodRadius;
 
     public readonly table: number[];
     public readonly code: bigint;
@@ -41,6 +44,38 @@ export class Rule {
         const prevSpace = spacetime.getSpaceAtTime(t - 1);
         const prevPrevSpace = spacetime.getSpaceAtTime(t - 2);
         const space = spacetime.getSpaceAtTime(t);
+        const ss = space.length;
+
+        let n1 = 0;
+        let c = prevSpace[nr - 1];
+        let n2 = prevSpace[nr];
+
+        for (let x = nr; x < ss - nr; x++) {
+            n1 = c;
+            c = n2;
+            n2 = prevSpace[x + 1];
+            const pc = prevPrevSpace[x];
+
+            let combinedState = 0;
+            combinedState = combinedState * stateCount + n1;
+            combinedState = combinedState * stateCount + c;
+            combinedState = combinedState * stateCount + n2;
+            combinedState = combinedState * stateCount + pc;
+            space[x] = table[combinedState];
+
+            // console.assert(table[combinedState] !== undefined);
+        }
+
+        return space;
+    }
+
+    fillSpace2(spacetime: number[][], t: number) {
+        const nr = this.spaceNeighbourhoodRadius;
+        const table = this.table;
+        const stateCount = this.stateCount;
+        const prevSpace = spacetime[t - 1];
+        const prevPrevSpace = spacetime[t - 2];
+        const space = spacetime[t];
         const ss = space.length;
 
         let n1 = 0;

@@ -1,5 +1,5 @@
 import { SpacetimeView } from "./SpacetimeView.js";
-import { FpsMeter } from "./FpsMeter.js";
+import { FpsMeter } from "./utils/FpsMeter.js";
 import { tap } from "./utils/misc.js";
 import { MyTweakpane } from "./utils/MyTweakpane.js";
 import { RuleExecutionContext } from "./RuleExecutionContext.js";

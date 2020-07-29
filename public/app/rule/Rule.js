@@ -1,4 +1,4 @@
-import { getDigitsFromNumber, getNumberFromDigits } from "./utils/misc.js";
+import { getDigitsFromNumber, getNumberFromDigits } from "../utils/misc.js";
 export class Rule {
     constructor(stateCount, tableOrCode) {
         this.stateCount = stateCount;
@@ -37,13 +37,13 @@ export class Rule {
             c = n2;
             n2 = prevSpace[x + 1];
             const pc = prevPrevSpace[x];
-            let state = 0;
-            state = state * stateCount + n1;
-            state = state * stateCount + c;
-            state = state * stateCount + n2;
-            state = state * stateCount + pc;
-            space[x] = table[state];
-            console.assert(table[state] !== undefined);
+            let combinedState = 0;
+            combinedState = combinedState * stateCount + n1;
+            combinedState = combinedState * stateCount + c;
+            combinedState = combinedState * stateCount + n2;
+            combinedState = combinedState * stateCount + pc;
+            space[x] = table[combinedState];
+            // console.assert(table[combinedState] !== undefined);
         }
         return space;
     }
