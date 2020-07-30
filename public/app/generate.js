@@ -49,7 +49,7 @@ export function generate({ spaceSize, timeSize, rule, startFill, bordersFill, ra
     for (let t = rule.timeNeighbourhoodRadius; t < timeSize; t++) {
         const space = rule.fillSpace2(spacetime, t);
         fillBorders(space, bordersFill, rule.spaceNeighbourhoodRadius, getRandomState);
-        const abortRequested = analyze(spacetime, t);
+        const abortRequested = analyze?.(spacetime, t);
         if (abortRequested) {
             break;
         }

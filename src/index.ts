@@ -9,7 +9,7 @@
 // app.run();
 
 import "./utils/dragPage.js";
-import { generate } from "./generate.js";
+import { generate, StartFill, BordersFill } from "./generate.js";
 import { render } from "./render.js";
 import { NtSymRuleSpace } from "./rule/NtSymRule.js";
 import { CacheMap } from "./utils/CacheMap.js";
@@ -19,8 +19,8 @@ import { MyTweakpane } from "./utils/MyTweakpane.js";
 
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
-const ctx = canvas.getContext("2d")!;
-ctx.imageSmoothingEnabled = false;
+const canvasCtx = canvas.getContext("2d")!;
+canvasCtx.imageSmoothingEnabled = false;
 
 const colors = [
     0xFF000000,
@@ -158,6 +158,22 @@ function getBorderFriendness(fullTable: number[], stateCount: number) {
     return acc;
 }
 
+const inputArgs: {
+    stateCount: number,
+    timeSize: number,
+    spaceSize: number,
+    startFill: StartFill,
+    bordersFill: BordersFill,
+    randomSeed: number,
+} = {
+    stateCount: 3,
+    timeSize: 8000,
+    spaceSize: 800,
+    startFill: "zeros",
+    bordersFill: "random",
+    randomSeed: 4242,
+}
+
 let code = 0n;
 let triedCode = 0;
 let tried = 0;
@@ -167,7 +183,7 @@ function doit() {
     let localTriedCode = 0;
     let localTried = 0;
     do {
-        const stateCount = 3;
+        const stateCount = inputArgs.stateCount;
         // const ruleSpaceSize = getZcRevSymRuleSpaceSize(stateCount);
         // const revSymTable = createRandomZcRevSymTable(stateCount);
         // const symTable = revSymToSym(revSymTable, stateCount);
@@ -202,12 +218,12 @@ function doit() {
         let abortCountdown = -1;
         
         const spacetime = generate({
-            timeSize: 8000,
-            spaceSize: 800,
+            timeSize: inputArgs.timeSize,
+            spaceSize: inputArgs.spaceSize,
             rule: fullRule,
-            startFill: "zeros",
-            bordersFill: "random",
-            randomSeed: 4242,
+            startFill: inputArgs.startFill,
+            bordersFill: inputArgs.bordersFill,
+            randomSeed: inputArgs.randomSeed,
             analyze(spacetime: number[][], t: number) {
                 if (abortCountdown == 0) {
                     return true;
@@ -242,7 +258,7 @@ function doit() {
         localTried++;
         if (cycledAt < 0) {
             takeThis = true;
-            render(spacetime, ctx, colors);
+            render(spacetime, canvasCtx, colors);
         }
         if (localTried > 150) {
             return;
@@ -261,7 +277,51 @@ window.addEventListener("keypress", ev => {
 });
 // doit();
 
+function doitOnceAndLight() {
+    const stateCount = inputArgs.stateCount;
+    const ruleSpace = new NtSymRuleSpace(stateCount);
+    const rule = ruleSpace.createRandomRule();
+    code = rule.code;
+    const fullRule = new Rule(stateCount, rule.getSymRule().getFullTable());
+    console.log(
+        "rule space code", 
+        rule.code, 
+        "of",
+        ruleSpace.size);
+    console.log(getNumberFromDigits(fullRule.table, stateCount), fullRule.table.join(""));
+    const spacetime = generate({
+        timeSize: inputArgs.timeSize,
+        spaceSize: inputArgs.spaceSize,
+        rule: fullRule,
+        startFill: inputArgs.startFill,
+        bordersFill: inputArgs.bordersFill,
+        randomSeed: inputArgs.randomSeed,
+    });
+    render(spacetime, canvasCtx, colors);
+}
+
 const gui = new MyTweakpane();
+gui.addInput(inputArgs, "timeSize");
+gui.addInput(inputArgs, "spaceSize");
+gui.addInput(inputArgs, "startFill", {
+    options: {
+        "zeros": "zeros",
+        "random": "random",
+    }
+});
+gui.addInput(inputArgs, "bordersFill", {
+    options: {
+        "zeros": "zeros",
+        "random": "random",
+        "cycle": "cycle",
+    }
+});
+gui.addInput(inputArgs, "randomSeed");
+gui.addButton({
+    title: "Generate",
+}).on("click", () => {
+    doitOnceAndLight();
+});
 gui.addButton({
     title: "Play",
 }).on("click", () => {

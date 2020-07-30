@@ -77,7 +77,7 @@ export function generate({
     startFill: StartFill,
     bordersFill: BordersFill,
     randomSeed: number,
-    analyze: (spacetime: number[][], t: number) => boolean
+    analyze?: (spacetime: number[][], t: number) => boolean
 }) {
     const random = new ParkMiller(randomSeed);
     const getRandomState = () => random.integer() % rule.stateCount;
@@ -94,7 +94,7 @@ export function generate({
             bordersFill, 
             rule.spaceNeighbourhoodRadius, 
             getRandomState);
-        const abortRequested = analyze(spacetime, t);
+        const abortRequested = analyze?.(spacetime, t);
         if (abortRequested) {
             break;
         }
