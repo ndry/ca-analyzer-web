@@ -13,6 +13,7 @@ import { NtSymRuleSpace } from "./rule/NtSymRule.js";
 import { CacheMap } from "./utils/CacheMap.js";
 import { Rule } from "./rule/Rule.js";
 import { getNumberFromDigits } from "./utils/misc.js";
+import { MyTweakpane } from "./utils/MyTweakpane.js";
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 ctx.imageSmoothingEnabled = false;
@@ -129,7 +130,7 @@ function getBorderFriendness(fullTable, stateCount) {
     console.log(acc, acc2, acc3, acc4, acc5, acc6);
     return acc;
 }
-// let code = 0n;
+let code = 0n;
 let triedCode = 0;
 let tried = 0;
 let found = 0;
@@ -144,6 +145,7 @@ function doit() {
         // const symTable = revSymToSym(revSymTable, stateCount);
         const ruleSpace = new NtSymRuleSpace(stateCount);
         const rule = ruleSpace.createRandomRule();
+        code = rule.code;
         const fullRule = new Rule(stateCount, rule.getSymRule().getFullTable());
         console.log("rule space code", rule.code, "of", ruleSpace.size);
         console.log(getNumberFromDigits(fullRule.table, stateCount), fullRule.table.join(""));
@@ -222,4 +224,10 @@ window.addEventListener("keypress", ev => {
     }
 });
 // doit();
+const gui = new MyTweakpane();
+gui.addButton({
+    title: "Play",
+}).on("click", () => {
+    window.open(`http://127.0.0.1:45245/public/index.html?code=${code}`, "_blank");
+});
 //# sourceMappingURL=index.js.map
