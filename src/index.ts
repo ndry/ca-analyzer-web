@@ -11,8 +11,7 @@
 import "./utils/dragPage.js";
 import { generate } from "./generate.js";
 import { render } from "./render.js";
-import { FullRuleSpace } from "./rule/FullRuleSpace.js";
-import { SymmetricalRuleSpace, ReversibleSymmetricalRuleSpace, getRevSymRuleSpaceSize, symToFull, createRevSymTable, revSymToSym, createZcRevSymTable, getZcRevSymRuleSpaceSize, createRandomZcRevSymTable, createRandomSymTable, getSymRuleSpaceSize } from "./rule/SymmetricalRuleSpace.js";
+import { NtSymRuleSpace } from "./rule/NtSymRule.js";
 import { CacheMap } from "./utils/CacheMap.js";
 import { Rule } from "./rule/Rule.js";
 import { getNumberFromDigits } from "./utils/misc.js";
@@ -171,21 +170,20 @@ function doit() {
         // const ruleSpaceSize = getZcRevSymRuleSpaceSize(stateCount);
         // const revSymTable = createRandomZcRevSymTable(stateCount);
         // const symTable = revSymToSym(revSymTable, stateCount);
-        const ruleSpaceSize = getSymRuleSpaceSize(stateCount)
-        const symTable = createRandomSymTable(stateCount);
-        const fullTable = symToFull(symTable, stateCount);
-        const rule = new Rule(stateCount, fullTable);
+        const ruleSpace = new NtSymRuleSpace(stateCount);
+        const rule = ruleSpace.createRandomRule();
+        const fullRule = new Rule(stateCount, rule.getSymRule().getFullTable());
         console.log(
             "rule space code", 
-            "n/a", 
+            rule.code, 
             "of",
-            ruleSpaceSize);
-        console.log(getNumberFromDigits(fullTable, stateCount), fullTable.join(""));
+            ruleSpace.size);
+        console.log(getNumberFromDigits(fullRule.table, stateCount), fullRule.table.join(""));
         // console.log("revSymTable", revSymTable.join("")); 
         triedCode++;
             localTriedCode++;
-        const bf = getBorderFriendness(fullTable, stateCount);
-        if (bf < 1 || symTable[0] !== 0) {
+        const bf = getBorderFriendness(fullRule.table, stateCount);
+        if (bf < 1 || fullRule.table[0] !== 0) {
             if (localTriedCode > 1000) {
                 return;
             } else {
@@ -193,7 +191,7 @@ function doit() {
             }
         }
         // console.log("getBorderFriendness", getBorderFriendness(fullTable, stateCount));
-        const margin = rule.spaceNeighbourhoodRadius;
+        const margin = fullRule.spaceNeighbourhoodRadius;
 
         const hashMap = new SpacePairHashSet();
 
@@ -204,7 +202,7 @@ function doit() {
         const spacetime = generate({
             timeSize: 8000,
             spaceSize: 800,
-            rule,
+            rule: fullRule,
             startFill: "zeros",
             bordersFill: "random",
             randomSeed: 4242,
