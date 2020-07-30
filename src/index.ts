@@ -17,6 +17,7 @@ import { Rule } from "./rule/Rule.js";
 import { getNumberFromDigits } from "./utils/misc.js";
 import { MyTweakpane } from "./utils/MyTweakpane.js";
 import ParkMiller from "park-miller";
+import { SymRuleSpace } from "./rule/SymRule.js";
 
 
 const canvas = document.getElementById("canvas") as HTMLCanvasElement;
@@ -188,10 +189,10 @@ function doit() {
         // const ruleSpaceSize = getZcRevSymRuleSpaceSize(stateCount);
         // const revSymTable = createRandomZcRevSymTable(stateCount);
         // const symTable = revSymToSym(revSymTable, stateCount);
-        const ruleSpace = new NtSymRuleSpace(stateCount);
+        const ruleSpace = new SymRuleSpace(stateCount);
         const rule = ruleSpace.createRandomRule();
         code = rule.code;
-        const fullRule = new Rule(stateCount, rule.getSymRule().getFullTable());
+        fullRule = new Rule(stateCount, rule.getFullTable());
         console.log(
             "rule space code", 
             rule.code, 
@@ -300,10 +301,9 @@ function generateFirstPage(
     const r = random = new ParkMiller(randomSeed);
     const getRandomState = () => r.integer() % fullRule!.stateCount;
 
-    const ruleSpace = new NtSymRuleSpace(stateCount);
+    const ruleSpace = new SymRuleSpace(stateCount);
     const rule = ruleSpace.createRandomRule();
-    code = rule.code;
-    fullRule = new Rule(stateCount, rule.getSymRule().getFullTable());
+    fullRule = new Rule(stateCount, rule.getFullTable());
     console.log(
         "rule space code", 
         rule.code, 
@@ -361,6 +361,6 @@ gui.addButton({
     title: "Play",
 }).on("click", () => {
     window.open(
-        `http://127.0.0.1:45245/public/index.html?code=${code}`, 
+        `http://127.0.0.1:45245/public/index.html?code=${fullRule!.code}`, 
         "_blank");
 });

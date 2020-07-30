@@ -9,12 +9,12 @@
 import "./utils/dragPage.js";
 import { generate, startSpacetime, fillStartedSpacetime } from "./generate.js";
 import { render } from "./render.js";
-import { NtSymRuleSpace } from "./rule/NtSymRule.js";
 import { CacheMap } from "./utils/CacheMap.js";
 import { Rule } from "./rule/Rule.js";
 import { getNumberFromDigits } from "./utils/misc.js";
 import { MyTweakpane } from "./utils/MyTweakpane.js";
 import ParkMiller from "park-miller";
+import { SymRuleSpace } from "./rule/SymRule.js";
 const canvas = document.getElementById("canvas");
 const canvasCtx = canvas.getContext("2d");
 canvasCtx.imageSmoothingEnabled = false;
@@ -152,10 +152,10 @@ function doit() {
         // const ruleSpaceSize = getZcRevSymRuleSpaceSize(stateCount);
         // const revSymTable = createRandomZcRevSymTable(stateCount);
         // const symTable = revSymToSym(revSymTable, stateCount);
-        const ruleSpace = new NtSymRuleSpace(stateCount);
+        const ruleSpace = new SymRuleSpace(stateCount);
         const rule = ruleSpace.createRandomRule();
         code = rule.code;
-        const fullRule = new Rule(stateCount, rule.getSymRule().getFullTable());
+        fullRule = new Rule(stateCount, rule.getFullTable());
         console.log("rule space code", rule.code, "of", ruleSpace.size);
         console.log(getNumberFromDigits(fullRule.table, stateCount), fullRule.table.join(""));
         // console.log("revSymTable", revSymTable.join("")); 
@@ -244,10 +244,9 @@ function generateFirstPage({ stateCount, timeSize, spaceSize, randomSeed, startF
     }
     const r = random = new ParkMiller(randomSeed);
     const getRandomState = () => r.integer() % fullRule.stateCount;
-    const ruleSpace = new NtSymRuleSpace(stateCount);
+    const ruleSpace = new SymRuleSpace(stateCount);
     const rule = ruleSpace.createRandomRule();
-    code = rule.code;
-    fullRule = new Rule(stateCount, rule.getSymRule().getFullTable());
+    fullRule = new Rule(stateCount, rule.getFullTable());
     console.log("rule space code", rule.code, "of", ruleSpace.size);
     console.log(getNumberFromDigits(fullRule.table, stateCount), fullRule.table.join(""));
     startSpacetime(spacetime, getRandomState, fullRule, startFill);
@@ -291,6 +290,6 @@ gui.addButton({
 gui.addButton({
     title: "Play",
 }).on("click", () => {
-    window.open(`http://127.0.0.1:45245/public/index.html?code=${code}`, "_blank");
+    window.open(`http://127.0.0.1:45245/public/index.html?code=${fullRule.code}`, "_blank");
 });
 //# sourceMappingURL=index.js.map

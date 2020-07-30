@@ -1,3 +1,4 @@
+import { getNumberFromDigits } from "../utils/misc.js";
 export class SymRuleSpace {
     constructor(stateCount) {
         this.stateCount = stateCount;
@@ -28,6 +29,7 @@ export class SymRule {
         this.ruleSpace = ruleSpace;
         this.table = table;
         this.stateCount = this.ruleSpace.stateCount;
+        this.code = getNumberFromDigits(this.table, this.stateCount);
     }
     getFullTable() {
         const stateCount = this.stateCount;

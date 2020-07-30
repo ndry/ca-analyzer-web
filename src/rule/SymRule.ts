@@ -1,3 +1,5 @@
+import { getNumberFromDigits } from "../utils/misc.js";
+
 export class SymRuleSpace {
     static symmetryMap = [
         [0, 1, 3, 6, 10],
@@ -45,6 +47,7 @@ export class SymRule {
     }
 
     stateCount = this.ruleSpace.stateCount;
+    code = getNumberFromDigits(this.table, this.stateCount);
 
     getFullTable() {
         const stateCount = this.stateCount;
