@@ -39,14 +39,8 @@ function getSpacetime(timeSize, spaceSize) {
     }
     return cachedSpacetime;
 }
-export function generate({ spaceSize, timeSize, rule, startFill, bordersFill, randomSeed, analyze, }) {
-    const random = new ParkMiller(randomSeed);
-    const getRandomState = () => random.integer() % rule.stateCount;
-    const spacetime = getSpacetime(timeSize, spaceSize);
-    for (let t = 0; t < rule.timeNeighbourhoodRadius; t++) {
-        fillStart(spacetime[t], startFill, getRandomState);
-    }
-    for (let t = rule.timeNeighbourhoodRadius; t < timeSize; t++) {
+export function fillStartedSpacetime(spacetime, getRandomState, rule, bordersFill, analyze) {
+    for (let t = rule.timeNeighbourhoodRadius; t < spacetime.length; t++) {
         const space = rule.fillSpace2(spacetime, t);
         fillBorders(space, bordersFill, rule.spaceNeighbourhoodRadius, getRandomState);
         const abortRequested = analyze?.(spacetime, t);
@@ -54,6 +48,26 @@ export function generate({ spaceSize, timeSize, rule, startFill, bordersFill, ra
             break;
         }
     }
+}
+export function startSpacetime(spacetime, getRandomState, rule, startFill) {
+    for (let t = 0; t < rule.timeNeighbourhoodRadius; t++) {
+        fillStart(spacetime[t], startFill, getRandomState);
+    }
+}
+export function generateeee(spacetime, getRandomState, { rule, startFill, bordersFill, analyze, }) {
+    startSpacetime(spacetime, getRandomState, rule, startFill);
+    fillStartedSpacetime(spacetime, getRandomState, rule, bordersFill, analyze);
+}
+export function generate({ spaceSize, timeSize, rule, startFill, bordersFill, randomSeed, analyze, }) {
+    const random = new ParkMiller(randomSeed);
+    const getRandomState = () => random.integer() % rule.stateCount;
+    const spacetime = getSpacetime(timeSize, spaceSize);
+    generateeee(spacetime, getRandomState, {
+        startFill,
+        bordersFill,
+        rule,
+        analyze,
+    });
     return spacetime;
 }
 //# sourceMappingURL=generate.js.map

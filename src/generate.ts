@@ -62,6 +62,69 @@ function getSpacetime(timeSize: number, spaceSize: number) {
     return cachedSpacetime;
 }
 
+export function fillStartedSpacetime(
+    spacetime: number[][],
+    getRandomState: () => number,
+    rule: Rule,
+    bordersFill: BordersFill,
+    analyze?: (spacetime: number[][], t: number) => boolean
+) {
+    for (let t = rule.timeNeighbourhoodRadius; t < spacetime.length; t++) {
+        const space = rule.fillSpace2(spacetime, t);
+        fillBorders(
+            space, 
+            bordersFill, 
+            rule.spaceNeighbourhoodRadius, 
+            getRandomState);
+        const abortRequested = analyze?.(spacetime, t);
+        if (abortRequested) {
+            break;
+        }
+    }
+}
+
+export function startSpacetime(
+    spacetime: number[][],
+    getRandomState: () => number,
+    rule: Rule,
+    startFill: StartFill,
+) {
+    for (let t = 0; t < rule.timeNeighbourhoodRadius; t++) {
+        fillStart(spacetime[t], startFill, getRandomState);
+    }
+}
+
+export function generateeee(
+    spacetime: number[][],
+    getRandomState: () => number,
+    {
+        rule,
+        startFill,
+        bordersFill,
+        analyze,
+    }: {
+        rule: Rule,
+        startFill: StartFill,
+        bordersFill: BordersFill,
+        analyze?: (spacetime: number[][], t: number) => boolean
+    },
+) {
+    startSpacetime(
+        spacetime,
+        getRandomState,
+        rule,
+        startFill,
+    );
+
+    fillStartedSpacetime(
+        spacetime, 
+        getRandomState,
+        rule,
+        bordersFill,
+        analyze,
+    );
+}
+
 export function generate({
     spaceSize,
     timeSize,
@@ -84,21 +147,12 @@ export function generate({
 
     const spacetime = getSpacetime(timeSize, spaceSize);
     
-    for (let t = 0; t < rule.timeNeighbourhoodRadius; t++) {
-        fillStart(spacetime[t], startFill, getRandomState);
-    }
-    for (let t = rule.timeNeighbourhoodRadius; t < timeSize; t++) {
-        const space = rule.fillSpace2(spacetime, t);
-        fillBorders(
-            space, 
-            bordersFill, 
-            rule.spaceNeighbourhoodRadius, 
-            getRandomState);
-        const abortRequested = analyze?.(spacetime, t);
-        if (abortRequested) {
-            break;
-        }
-    }
+    generateeee(spacetime, getRandomState, {
+        startFill,
+        bordersFill,
+        rule,
+        analyze,
+    })
 
     return spacetime;
 }

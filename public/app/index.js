@@ -7,13 +7,14 @@
 // }
 // app.run();
 import "./utils/dragPage.js";
-import { generate } from "./generate.js";
+import { generate, startSpacetime, fillStartedSpacetime } from "./generate.js";
 import { render } from "./render.js";
 import { NtSymRuleSpace } from "./rule/NtSymRule.js";
 import { CacheMap } from "./utils/CacheMap.js";
 import { Rule } from "./rule/Rule.js";
 import { getNumberFromDigits } from "./utils/misc.js";
 import { MyTweakpane } from "./utils/MyTweakpane.js";
+import ParkMiller from "park-miller";
 const canvas = document.getElementById("canvas");
 const canvasCtx = canvas.getContext("2d");
 canvasCtx.imageSmoothingEnabled = false;
@@ -232,22 +233,32 @@ window.addEventListener("keypress", ev => {
     }
 });
 // doit();
-function doitOnceAndLight() {
-    const stateCount = inputArgs.stateCount;
+let spacetime = undefined;
+let random = undefined;
+let fullRule = undefined;
+function generateFirstPage({ stateCount, timeSize, spaceSize, randomSeed, startFill, bordersFill, }) {
+    if (!spacetime
+        || spacetime.length !== timeSize
+        || spacetime[0].length !== spaceSize) {
+        spacetime = Array.from({ length: timeSize }, () => Array.from({ length: spaceSize }));
+    }
+    const r = random = new ParkMiller(randomSeed);
+    const getRandomState = () => r.integer() % fullRule.stateCount;
     const ruleSpace = new NtSymRuleSpace(stateCount);
     const rule = ruleSpace.createRandomRule();
     code = rule.code;
-    const fullRule = new Rule(stateCount, rule.getSymRule().getFullTable());
+    fullRule = new Rule(stateCount, rule.getSymRule().getFullTable());
     console.log("rule space code", rule.code, "of", ruleSpace.size);
     console.log(getNumberFromDigits(fullRule.table, stateCount), fullRule.table.join(""));
-    const spacetime = generate({
-        timeSize: inputArgs.timeSize,
-        spaceSize: inputArgs.spaceSize,
-        rule: fullRule,
-        startFill: inputArgs.startFill,
-        bordersFill: inputArgs.bordersFill,
-        randomSeed: inputArgs.randomSeed,
-    });
+    startSpacetime(spacetime, getRandomState, fullRule, startFill);
+    fillStartedSpacetime(spacetime, getRandomState, fullRule, bordersFill);
+    render(spacetime, canvasCtx, colors);
+}
+function generateNextPage({ timeSize, bordersFill, }) {
+    const getRandomState = () => random.integer() % fullRule.stateCount;
+    spacetime.unshift(spacetime.pop());
+    spacetime.unshift(spacetime.pop());
+    fillStartedSpacetime(spacetime, getRandomState, fullRule, bordersFill);
     render(spacetime, canvasCtx, colors);
 }
 const gui = new MyTweakpane();
@@ -270,7 +281,12 @@ gui.addInput(inputArgs, "randomSeed");
 gui.addButton({
     title: "Generate",
 }).on("click", () => {
-    doitOnceAndLight();
+    generateFirstPage(inputArgs);
+});
+gui.addButton({
+    title: "Generate next page",
+}).on("click", () => {
+    generateNextPage(inputArgs);
 });
 gui.addButton({
     title: "Play",
