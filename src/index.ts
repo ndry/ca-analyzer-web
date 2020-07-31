@@ -12,6 +12,7 @@ import "./utils/dragPage.js";
 import { generate, StartFill, BordersFill, startSpacetime, fillStartedSpacetime } from "./generate.js";
 import { render } from "./render.js";
 import { NtSymRuleSpace } from "./rule/NtSymRule.js";
+import { WolframTotalisticRuleSpace } from "./rule/WolframTotalisticRule.js";
 import { CacheMap } from "./utils/CacheMap.js";
 import { Rule } from "./rule/Rule.js";
 import { getNumberFromDigits } from "./utils/misc.js";
@@ -315,6 +316,41 @@ function generateFirstPage(
     fillStartedSpacetime(spacetime, getRandomState, fullRule, bordersFill);
     render(spacetime, canvasCtx, colors);
 }
+
+function generateFirstPage1(
+    {
+        stateCount, timeSize, spaceSize, randomSeed, startFill, bordersFill,
+    }: typeof inputArgs,
+) {
+    if (
+        !spacetime 
+        || spacetime.length !== timeSize 
+        || spacetime[0].length !== spaceSize
+    ) {
+        spacetime = Array.from(
+            { length: timeSize }, 
+            () => Array.from({ length: spaceSize }) as number[]
+        );
+    }
+
+    const r = random = new ParkMiller(randomSeed);
+    const getRandomState = () => r.integer() % fullRule!.stateCount;
+
+    const ruleSpace = new WolframTotalisticRuleSpace(stateCount);
+    const rule = ruleSpace.createRule(1815n);
+    fullRule = new Rule(stateCount, rule.getFullTable());
+    console.log(
+        "rule space code", 
+        rule.code, 
+        "of",
+        ruleSpace.size);
+    console.log(fullRule.code, fullRule.table.join(""));
+
+    startSpacetime(spacetime, getRandomState, fullRule, startFill);
+    fillStartedSpacetime(spacetime, getRandomState, fullRule, bordersFill);
+    render(spacetime, canvasCtx, colors);
+}
+generateFirstPage1(inputArgs);
 
 function generateNextPage(
     {
