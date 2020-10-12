@@ -1,29 +1,33 @@
 import { getNumberFromDigits } from "../utils/misc.js";
-export class SymRuleSpace {
-    constructor(stateCount) {
-        this.stateCount = stateCount;
-        this.symmetryMap = SymRuleSpace.symmetryMap;
-        this.symStateCount = 1 + this.symmetryMap[this.stateCount - 1][this.stateCount - 1];
-        this.sizePower = (this.stateCount ** 2) * this.symStateCount;
-        this.size = BigInt(this.stateCount) ** BigInt(this.sizePower);
+let SymRuleSpace = /** @class */ (() => {
+    class SymRuleSpace {
+        constructor(stateCount) {
+            this.stateCount = stateCount;
+            this.symmetryMap = SymRuleSpace.symmetryMap;
+            this.symStateCount = 1 + this.symmetryMap[this.stateCount - 1][this.stateCount - 1];
+            this.sizePower = (this.stateCount ** 2) * this.symStateCount;
+            this.size = BigInt(this.stateCount) ** BigInt(this.sizePower);
+        }
+        createRandomTable() {
+            return Array.from({ length: this.sizePower }, () => Math.floor(Math.random() * this.stateCount));
+        }
+        createEmptyTable() {
+            return Array.from({ length: this.sizePower });
+        }
+        createRandomRule() {
+            return new SymRule(this, this.createRandomTable());
+        }
     }
-    createRandomTable() {
-        return Array.from({ length: this.sizePower }, () => Math.floor(Math.random() * this.stateCount));
-    }
-    createEmptyTable() {
-        return Array.from({ length: this.sizePower });
-    }
-    createRandomRule() {
-        return new SymRule(this, this.createRandomTable());
-    }
-}
-SymRuleSpace.symmetryMap = [
-    [0, 1, 3, 6, 10],
-    [1, 2, 4, 7, 11],
-    [3, 4, 5, 8, 12],
-    [6, 7, 8, 9, 13],
-    [10, 11, 12, 13, 14],
-];
+    SymRuleSpace.symmetryMap = [
+        [0, 1, 3, 6, 10],
+        [1, 2, 4, 7, 11],
+        [3, 4, 5, 8, 12],
+        [6, 7, 8, 9, 13],
+        [10, 11, 12, 13, 14],
+    ];
+    return SymRuleSpace;
+})();
+export { SymRuleSpace };
 export class SymRule {
     constructor(ruleSpace, table) {
         this.ruleSpace = ruleSpace;

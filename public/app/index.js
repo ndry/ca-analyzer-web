@@ -309,6 +309,9 @@ gui.addButton({
 gui.addButton({
     title: "Play",
 }).on("click", () => {
-    window.open(`http://127.0.0.1:45245/public/index.html?code=${fullRule.code}`, "_blank");
+    const link = env.local
+        ? `http://127.0.0.1:45245/public/index.html?code=${fullRule.code}`
+        : `https://ndry.github.io/cellship/public/?code=${fullRule.code}`;
+    window.open(link, "_blank");
 });
 //# sourceMappingURL=index.js.map
