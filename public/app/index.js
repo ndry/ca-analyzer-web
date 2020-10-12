@@ -311,7 +311,7 @@ gui.addButton({
 }).on("click", () => {
     const link = env.local
         ? `http://127.0.0.1:45245/public/index.html?code=${fullRule.code}`
-        : `https://ndry.github.io/cellship/public/?code=${fullRule.code}`;
+        : `https://ndry.github.io/cellship/public/index.html?code=${fullRule.code}`;
     window.open(link, "_blank");
 });
 //# sourceMappingURL=index.js.map
